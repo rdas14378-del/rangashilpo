@@ -1,0 +1,42 @@
+{
+  "name": "RangaShilpo - Devotional Fine Art & Heritage Crafts",
+  "short_name": "RangaShilpo",
+  "description": "Curated sanctuary of traditional Indian fine arts and ceremonial crafts by Riddhima Das",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#9b1b30",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["shopping", "art", "lifestyle"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Fine Art Gallery",
+      "short_name": "Fine Art",
+      "description": "Browse sacred devotional paintings",
+      "url": "/art",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Ceremonial Crafts",
+      "short_name": "Crafts",
+      "description": "Explore heritage handicrafts",
+      "url": "/crafts",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

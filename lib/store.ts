@@ -96,6 +96,7 @@ export const usePriceStore = create<PriceStore>((set, get) => ({
 
   initializePrices: async () => {
     if (typeof window !== 'undefined') {
+      // First try localStorage for instant UI
       const stored = localStorage.getItem(STORAGE_KEY)
       if (stored) {
         try {
@@ -105,6 +106,25 @@ export const usePriceStore = create<PriceStore>((set, get) => ({
         }
       } else {
         set({ prices: DEFAULT_PRICES })
+      }
+
+      // Then fetch from database to sync overrides
+      try {
+        const response = await fetch('/api/update-price')
+        if (response.ok) {
+          const { priceOverrides } = await response.json()
+          if (priceOverrides && priceOverrides.length > 0) {
+            const dbPrices: Record<string, number> = {}
+            for (const override of priceOverrides) {
+              dbPrices[override.productId] = override.price
+            }
+            const mergedPrices = { ...get().prices, ...dbPrices }
+            set({ prices: mergedPrices })
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(mergedPrices))
+          }
+        }
+      } catch {
+        // Silently fail - localStorage is source of truth
       }
     }
   },
@@ -117,10 +137,10 @@ export const usePriceStore = create<PriceStore>((set, get) => ({
     }
     // Also sync to server via API
     try {
-      await fetch('/api/prices', {
+      await fetch('/api/update-price', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, price }),
+        body: JSON.stringify({ productId: id, price }),
       })
     } catch {
       // Silently fail - localStorage is source of truth

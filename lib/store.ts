@@ -64,6 +64,7 @@ export const useCartStore = create<CartStore>()(
 interface PriceStore {
   prices: Record<string, number>
   setPrice: (id: string, price: number) => Promise<void>
+  setPrices: (prices: Record<string, number>) => void
   getPrice: (id: string) => number | undefined
   initializePrices: () => Promise<void>
 }
@@ -126,6 +127,13 @@ export const usePriceStore = create<PriceStore>((set, get) => ({
       } catch {
         // Silently fail - localStorage is source of truth
       }
+    }
+  },
+
+  setPrices: (prices: Record<string, number>) => {
+    set({ prices })
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(prices))
     }
   },
 

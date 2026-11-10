@@ -12,7 +12,7 @@ import Footer from '@/components/Footer'
 import CartDrawer from '@/components/CartDrawer'
 import { Sparkles, ArrowDown, Crown, Shield, Heart, Award } from 'lucide-react'
 import { useCartStore, usePriceStore } from '@/lib/store'
-import { crafts } from '@/lib/data'
+import { artworks, crafts } from '@/lib/data'
 import { isSuperAdmin } from '@/lib/auth'
 
 // Dynamic import for 3D heavy component
@@ -82,7 +82,8 @@ export default function HomePageClient({ initialPrices }: HomePageClientProps) {
     return <AuthGate />
   }
 
-  const featuredCrafts = crafts.filter(c => c.featured).slice(0, 3)
+  const featuredCrafts = crafts.filter(c => c.featured).slice(0, 4)
+  const featuredArt = artworks.filter(a => a.featured).slice(0, 4)
 
   return (
     <>
@@ -206,6 +207,43 @@ export default function HomePageClient({ initialPrices }: HomePageClientProps) {
               <div className="md:hidden mt-6 text-center">
                 <a href="/crafts" className="btn-secondary">
                   View All 9 Crafts
+                  <ArrowDown className="w-4 h-4" />
+                </a>
+              </div>
+            </div>
+
+            {/* Featured Fine Art */}
+            <div className="mt-24">
+              <div className="flex items-center justify-between mb-10">
+                <div>
+                  <h3 className="font-serif text-2xl md:text-3xl font-bold text-obsidian">
+                    Sacred Fine Art Gallery
+                  </h3>
+                  <p className="text-slate-600 mt-1">Original devotional paintings</p>
+                </div>
+                <a
+                  href="/art"
+                  className="hidden md:inline-flex items-center gap-2 text-crimson font-medium hover:text-crimson-light transition-colors"
+                >
+                  View All 9 Artworks
+                  <ArrowDown className="w-4 h-4" />
+                </a>
+              </div>
+
+              <div className="art-grid">
+                {featuredArt.map((art, index) => (
+                  <CraftCardPreview
+                    key={art.id}
+                    item={art}
+                    index={index}
+                    isAdmin={isAdmin}
+                  />
+                ))}
+              </div>
+
+              <div className="md:hidden mt-6 text-center">
+                <a href="/art" className="btn-secondary">
+                  View All 9 Artworks
                   <ArrowDown className="w-4 h-4" />
                 </a>
               </div>
@@ -422,13 +460,13 @@ function AuthGate() {
   )
 }
 
-// Craft Card Preview Component - Only for Crafts on Landing Page
+// Card Preview Component for both Crafts and Art
 function CraftCardPreview({
   item,
   index,
   isAdmin,
 }: {
-  item: typeof crafts[0]
+  item: typeof crafts[0] | typeof artworks[0]
   index: number
   isAdmin: boolean
 }) {
@@ -444,6 +482,10 @@ function CraftCardPreview({
   const getPrice = usePriceStore((state) => state.getPrice)
   const currentPrice = getPrice(item.id) ?? item.price
 
+  const isArtwork = 'category' in item && item.category === 'fine-art'
+  const routePath = isArtwork ? 'art' : 'crafts'
+  const typeLabel = isArtwork ? 'Sacred Fine Art' : 'Ceremonial Craft'
+
   return (
     <motion.article
       initial={{ opacity: 0, y: 30 }}
@@ -452,7 +494,7 @@ function CraftCardPreview({
       transition={{ duration: 0.6, delay: index * 0.1 }}
       className="group relative bg-white rounded-2xl overflow-hidden shadow-gallery hover:shadow-gallery-hover transition-all duration-500"
     >
-      <Link href={`/crafts/${item.slug}`} className="block">
+      <Link href={`/${routePath}/${item.slug}`} className="block">
         <div className="aspect-[3/4] relative overflow-hidden">
           <img
             src={item.image}
@@ -470,7 +512,7 @@ function CraftCardPreview({
 
         <div className="p-5">
           <p className="font-serif text-sm text-crimson font-medium tracking-wide mb-1">
-            Ceremonial Craft
+            {typeLabel}
           </p>
 
           <h3 className="font-serif text-lg font-bold text-obsidian mb-2 group-hover:text-crimson transition-colors line-clamp-1">
